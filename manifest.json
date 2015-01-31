@@ -1,0 +1,30 @@
+{
+	"name": "tabsKeeper",
+	"description": "keep all tab to my server and locatehost.",
+	"version": "0.0.1",
+	"background": {
+		"scripts": ["jquery.js", "background.js"]
+	},
+	"permissions": ["tabs", "storage", "notifications", "http://*/*", "https://*/*"],
+	"browser_action": {
+		"default_title": "tabsKeeper",
+		"default_icon": "icon.png"
+	},
+	"web_accessible_resources": [
+    "background.js",
+    "jquery.js",
+    "http://140.123.101.185/*"
+  ],
+	"options_page": "popup.html",
+	"content_scripts": [
+		{
+			"matches": ["http://140.123.101.185/*"],
+			"js": ["jquery.js","extensionCheker.js"],
+			"css": ["style.css"],
+			"run_at": "document_end"
+
+		}
+	],
+		
+	"manifest_version": 2
+}
