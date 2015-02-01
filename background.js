@@ -12,6 +12,10 @@ chrome.extension.onMessage.addListener(function(request, sender) {
 		console.log("icon_click");
 		//console.log(request.source);
 	}
+	else  {
+		console.log(request);
+		//console.log(request.source);
+	}
 	
 });
 function getmesage(opt) {//should be websocket.onmessage

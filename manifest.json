@@ -18,8 +18,8 @@
 	"options_page": "popup.html",
 	"content_scripts": [
 		{
-			"matches": ["http://140.123.101.185/*"],
-			"js": ["jquery.js","extensionCheker.js"],
+			"matches": ["http://*/*" , "https://*/*"],
+			"js": ["jquery.js", "getScrollPosition.js"],
 			"css": ["style.css"],
 			"run_at": "document_end"
 
