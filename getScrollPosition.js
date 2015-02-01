@@ -31,13 +31,27 @@ function DOMtoString(document_root) {
 
 
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
-	//if (request.action == "getScrollPosition") {
-		sendResponse({title:document.title,url:document.URL,scrollLocation: $(document).scrollTop()});
+	if (request.action == "getScrollPosition") {
+		var obj={};
+		var title="",url="";
+		title=document.title;
+		url = document.URL;
+		if(title == "") title = url;
+		obj = {title:title,url:url,scrollLocation: $(document).scrollTop()};
+		sendResponse(obj);
 		console.log(request.action);
 		//sendResponse({scrollLocation: "AABBCCQQQQQQQQ"});
 		console.log(request);
 		console.log("yoyoyoQ_QQQQQQ");
-	//}
+	}
+	else if (request.action == "getScrollPosition") {
+		document.addEventListener('DOMContentLoaded', function() {
+					$(document).scrollTop(request.to);
+		});
+	}
+	else{
+		console.log("wtf"+request);
+	}
 	 return true; 
 }); 
 
