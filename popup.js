@@ -12,26 +12,35 @@ document.addEventListener('DOMContentLoaded', function() {
 		chrome.tabs.query({}, function(tabs) {
 			var saveInfo = {};
 			var tabary = [];
+			var functionCalls = [];
 
 
 			 for (var i in tabs) {
 
-				chrome.tabs.sendMessage(tabs[i].id, {
+				functionCalls = chrome.tabs.sendMessage(tabs[i].id, {
 					action : "getScrollPosition"
 				}, function(response) {
-					
-					tabary.push({
-						title : response.title,
+					console.log(response);
+					if(!response)return;
+					var obj = {};
+					try{
+						obj = {title : response.title,
 						url : response.url,
 						scrollLocation : response.scrollLocation
-					});
+					};
+					}catch(e){
+						console.log("fail");
+					}
+					tabary.push(obj);
 				});
 
 			}
-			console.log(tabary);
+			// console.log(tabary.len);
 
-			$.when.apply(null, tabs).done(function() {
-
+			// $.when.apply(null, functionCalls).done(function() {
+			// $(document).ajaxStop(function () {
+			setTimeout(function() {
+				console.log('len:'+tabary.length);
 				saveInfo.urls = tabary;
 				saveInfo.userIdentify = userIdentify;
 				saveInfo.timestamp = (new Date()).getTime();
@@ -53,15 +62,29 @@ document.addEventListener('DOMContentLoaded', function() {
 						console.log("fail" + JSON.parse(JSON.stringify(tabary)));
 					}
 				});
-				//console.log("window will close");
-				window.close();
+				console.log("window will close");
+				// window.close();
 
-			});
+			},1000);
 		});
 
 	});
+	$("#openUrls").click(function() {
+		$.ajax({
+			type: 'GET',
+			url: "http://140.123.101.185:3009/tabs/get/?uid="+$("#uid").val(),
+			//dataType: 'jsonp',
+			success: function(json) {
+				chrome.runtime.sendMessage({
+					openUrls : json
+				});
+
+			
+    		}
+		});
+	});
 	chrome.runtime.sendMessage({
-		action : "iconClick"
+		msg : "popup.js running"
 	});
 
 });
