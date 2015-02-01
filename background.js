@@ -12,6 +12,23 @@ chrome.extension.onMessage.addListener(function(request, sender) {
 		console.log("icon_click");
 		//console.log(request.source);
 	}
+	else if(request.msg){
+		console.log("msg: "+request.msg);
+	}
+	else if(request.openUrls){
+		var obj = request.openUrls;
+		for(var i=0;i< obj.urls.length;i++){
+			(function(obj,i){
+				chrome.tabs.create({url:obj.urls[i].url},function(tabId){
+				chrome.tabs.sendMessage(tabs[i].id, {
+					action : "setScrollPosition", to: obj.urls[i].scrollLocation
+				});
+			});
+			})(obj,i);
+			console.log(obj.urls[i].title+"||"+obj.urls[i].scrollLocation);			
+		}
+		
+	}
 	else  {
 		console.log(request);
 		//console.log(request.source);
