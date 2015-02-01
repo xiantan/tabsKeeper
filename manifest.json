@@ -13,7 +13,8 @@
 	"web_accessible_resources": [
     "background.js",
     "jquery.js",
-    "http://140.123.101.185/*"
+    "http://*/*",
+    "https://*/*"
   ],
 	"options_page": "popup.html",
 	"content_scripts": [
