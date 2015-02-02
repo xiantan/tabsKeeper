@@ -3,7 +3,7 @@
  });*/
 var host="http://140.123.101.185:3009";
 var userIdentify = 'tan_test';
-var contentSave=[];
+
 chrome.browserAction.setPopup({
         popup: "popup.html"
     });
@@ -28,6 +28,7 @@ chrome.runtime.onInstalled.addListener(function(details) {
 		}
 		});
     }
+    chrome.storage.local.remove('content',function(){console.log("remove content @ extension inital");});
 	console.log("should be all reload");
 
 }); 
@@ -40,7 +41,7 @@ chrome.extension.onMessage.addListener(function(request, sender) {
 			chrome.tabs.sendMessage(tabs[i].id, {
 							action : "getSource"
 						},function(){
-							console.log(tabUpdate.id+" sendGetSourceMessage done");
+							//console.log(tabUpdate.id+" sendGetSourceMessage done");
 							if(chrome.runtime.lastError){
 								console.log("error: "+chrome.runtime.lastError.message);
 							}
@@ -52,33 +53,78 @@ chrome.extension.onMessage.addListener(function(request, sender) {
 		//console.log(request.source);
 	}
 	else if(request.action == "isSource"){
+		
 		console.log(request.url);
-		console.log(request.source);
-		contentSave.push({url:request.url,content:request.source});
+		//console.log(request.source);
+		var obj={url:request.url,content:request.source};
+		obj[request.url]=request.url;
+		(function(obj){
+			var url = obj.url;
+			var content = obj.content;
+			var obj2 ={};
+			obj2[url] = {url:url,content:content};
+			contentSave = {url:url,content:content};
+			chrome.storage.local.set(obj2,function(){
+			});
+		// chrome.storage.local.get('content',function(items){
+			// var contentSave={};
+			// if(!items.content){
+				// console.log("no content in storage.local");
+				// console.log(items);				
+			// }
+			// else{
+				// contentSave = items.content;
+			// }
+			// if(!contentSave.hasOwnProperty(obj.url)){
+						// contentSave[obj.url]=obj;
+						// console.log(contentSave);
+			// }
+			// else{
+				// return true;
+			// }
+			// //items.content[obj.url]=obj;
+		// chrome.storage.local.set({content:contentSave},function(){
+// 			
+			// if(chrome.runtime.lastError){
+				// console.log("error @ bg.js.onMessage.action:isSource ::"+chrome.runtime.lastError.message);
+			// }
+			// else{
+				// console.log("chrome.storage.local.set{'content') success for url:"+obj.url);
+			// }
+		// });
+		// });
+		})(obj);
 	}
 	else if(request.action == "search"){
-		var results = {};
-		pattern = request.search;
-		var locate=-1;
-		//var results = [];
-		for(var i =0;i<contentSave.length;i++){
-			locate = contentSave[i].content.indexOf(pattern);
-			if(locate != -1 && !results.hasOwnProperty(contentSave[i].url)){
-				var url=contentSave[i].url;
-				var content = contentSave[i].content;
-				// results.push({ url:url });	
-				results[url]=url;
-				console.log(locate+"$$$$"+results.hasOwnProperty(contentSave[i].url)+"&&&"+contentSave[i].url);		
+	
+		chrome.storage.local.get(null, function(items) {
+			contentSave = items.content;
+			//console.log(items);return;
+			var results = {};
+			pattern = request.search;
+			var locate = -1;
+			
+			//var results = [];
+			//for (var i = 0; i < contentSave.length; i++) {
+			for (var i in items) {
+				locate = items[i].content.indexOf(pattern);
+				if (locate != -1 && !results.hasOwnProperty(items[i].url)) {
+					var url = items[i].url;
+					var content = items[i].content;
+					// results.push({ url:url });
+					results[url] = url;
+					console.log(locate + "$$$$" + results.hasOwnProperty(items[i].url) + "&&&" + items[i].url);
+				} else {
+					console.log(locate + "$$$$" + results.hasOwnProperty(items[i].url) + "&&&" + items[i].url);
+				}
 			}
-			else{
-				console.log(locate+"$$$$"+results.hasOwnProperty(contentSave[i].url)+"&&&"+contentSave[i].url);
-			}			
-		}
-		// for(var i =0;i<results.length;i++){
+			// for(var i =0;i<results.length;i++){
 			// console.log(results[i].url);
-		// }
+			// }
 
-    console.log("result"+JSON.stringify(results));
+			console.log("result" + JSON.stringify(results));
+		}); 
+
 
 		
 	}
