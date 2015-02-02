@@ -14,32 +14,34 @@ document.addEventListener('DOMContentLoaded', function() {
 			var tabary = [];
 			var functionCalls = [];
 
-
-			 for (var i in tabs) {
-
-				functionCalls = chrome.tabs.sendMessage(tabs[i].id, {
-					action : "getScrollPosition"
-				}, function(response) {
-					console.log(response);
-					if(!response)return;
-					var obj = {};
-					try{
-						obj = {title : response.title,
-						url : response.url,
-						scrollLocation : response.scrollLocation
-					};
-					}catch(e){
-						console.log("fail");
-					}
-					tabary.push(obj);
-				});
-
-			}
+			sendGetScrollPosition(tabs,tabary);
+			
+			 // for (var i in tabs) {
+// 
+				// functionCalls = chrome.tabs.sendMessage(tabs[i].id, {
+					// action : "getScrollPosition"
+				// }, function(response) {
+					// console.log(response);
+					// if(!response)return;
+					// var obj = {};
+					// try{
+						// obj = {title : response.title,
+						// url : response.url,
+						// scrollLocation : response.scrollLocation
+					// };
+					// }catch(e){
+						// console.log("fail");
+					// }
+					// tabary.push(obj);
+				// });
+// 
+			// }
 			// console.log(tabary.len);
 
 			// $.when.apply(null, functionCalls).done(function() {
 			// $(document).ajaxStop(function () {
 			setTimeout(function() {
+				console.log(tabary);
 				console.log('len:'+tabary.length);
 				saveInfo.urls = tabary;
 				saveInfo.userIdentify = userIdentify;
@@ -83,8 +85,49 @@ document.addEventListener('DOMContentLoaded', function() {
     		}
 		});
 	});
+	$("#getsource").click(function() {
+		chrome.runtime.sendMessage({
+					action : "getSource"
+				});
+
+	});
+	$("#search").click(function() {
+		chrome.runtime.sendMessage({
+					action : "search",
+					search : $("#uid").val()
+				});
+
+	});
 	chrome.runtime.sendMessage({
 		msg : "popup.js running"
 	});
 
 });
+
+function sendGetScrollPosition(tabs, tabary) {
+	
+	for (var i in tabs) {
+
+		functionCalls = chrome.tabs.sendMessage(tabs[i].id, {
+			action : "getScrollPosition"
+		}, function(response) {
+			console.log(response);
+			if (!response)
+				return;
+			var obj = {};
+			try {
+				obj = {
+					title : response.title,
+					url : response.url,
+					scrollLocation : response.scrollLocation
+				};
+				console.log("success in sendGetScrollPosition ");
+			} catch(e) {
+				console.log("fail");
+			}
+			
+			tabary.push(obj);
+		});
+
+	}
+}

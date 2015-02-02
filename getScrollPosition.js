@@ -43,16 +43,29 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 		//sendResponse({scrollLocation: "AABBCCQQQQQQQQ"});
 		console.log(request);
 		console.log("yoyoyoQ_QQQQQQ");
+		return true; 
 	}
-	else if (request.action == "getScrollPosition") {
+	else if (request.action == "setScrollPosition") {
+		console.log("@set scroll"+document.readyState);
 		document.addEventListener('DOMContentLoaded', function() {
+					console.log("@set scroll.domloaded");
 					$(document).scrollTop(request.to);
 		});
+		return true;
+	}
+	else if(request.action=="getSource"){
+
+		chrome.extension.sendMessage({
+			action : "isSource",
+			url : document.URL,
+			source : DOMtoString(document)
+		}); 
+
 	}
 	else{
 		console.log("wtf"+request);
 	}
-	 return true; 
+	 
 }); 
 
 /*chrome.extension.sendMessage({

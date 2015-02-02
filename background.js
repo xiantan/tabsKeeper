@@ -3,14 +3,84 @@
  });*/
 var host="http://140.123.101.185:3009";
 var userIdentify = 'tan_test';
+var contentSave=[];
 chrome.browserAction.setPopup({
         popup: "popup.html"
     });
+/*debug*/
+ 
+chrome.runtime.onInstalled.addListener(function(details) {
+//chrome.runtime.onStartup.addListener(function(details) {
+	/*chrome.tabs.query({}, function(tabs) {
+		for(var i in tabs){
+			chrome.tabs.reload(tabs[i].id,{bypassCache: true});
+		}
+	});*/
+	if(details.reason == "install"){
+        console.log("This is a first install!");
+    }else if(details.reason == "update"){
+        var thisVersion = chrome.runtime.getManifest().version;
+        console.log("Updated from " + details.previousVersion + " to " + thisVersion + "!");
+        chrome.tabs.query({}, function(tabs) {
+		for(var i=1;i<tabs.length&&i<10;i++){
+			chrome.tabs.reload(tabs[i].id);
+			//console.log(tabs[0].id);
+		}
+		});
+    }
+	console.log("should be all reload");
 
+}); 
+ 
+ /*debug*/
 chrome.extension.onMessage.addListener(function(request, sender) {
-	if (request.action == "iconClick") {
-		console.log("icon_click");
+	if (request.action == "getSource") {
+		chrome.tabs.query({}, function(tabs) {
+		for(var i in tabs){
+			chrome.tabs.sendMessage(tabs[i].id, {
+							action : "getSource"
+						},function(){
+							console.log(tabUpdate.id+" sendGetSourceMessage done");
+							if(chrome.runtime.lastError){
+								console.log("error: "+chrome.runtime.lastError.message);
+							}
+						});
+
+		}
+	});
+		console.log("send to get  source");
 		//console.log(request.source);
+	}
+	else if(request.action == "isSource"){
+		console.log(request.url);
+		console.log(request.source);
+		contentSave.push({url:request.url,content:request.source});
+	}
+	else if(request.action == "search"){
+		var results = {};
+		pattern = request.search;
+		var locate=-1;
+		//var results = [];
+		for(var i =0;i<contentSave.length;i++){
+			locate = contentSave[i].content.indexOf(pattern);
+			if(locate != -1 && !results.hasOwnProperty(contentSave[i].url)){
+				var url=contentSave[i].url;
+				var content = contentSave[i].content;
+				// results.push({ url:url });	
+				results[url]=url;
+				console.log(locate+"$$$$"+results.hasOwnProperty(contentSave[i].url)+"&&&"+contentSave[i].url);		
+			}
+			else{
+				console.log(locate+"$$$$"+results.hasOwnProperty(contentSave[i].url)+"&&&"+contentSave[i].url);
+			}			
+		}
+		// for(var i =0;i<results.length;i++){
+			// console.log(results[i].url);
+		// }
+
+    console.log("result"+JSON.stringify(results));
+
+		
 	}
 	else if(request.msg){
 		console.log("msg: "+request.msg);
@@ -19,11 +89,35 @@ chrome.extension.onMessage.addListener(function(request, sender) {
 		var obj = request.openUrls;
 		for(var i=0;i< obj.urls.length;i++){
 			(function(obj,i){
-				chrome.tabs.create({url:obj.urls[i].url},function(tabId){
-				chrome.tabs.sendMessage(tabs[i].id, {
-					action : "setScrollPosition", to: obj.urls[i].scrollLocation
-				});
-			});
+				
+				if(chrome.runtime.lastError){
+								console.log("error: "+chrome.runtime.lastError.message);
+							}
+				chrome.tabs.create({
+					//active : false
+				}, function(tab) {//BUG BUG TODO
+					// chrome.tabs.create({url:obj.urls[i].url},function(tab){
+					chrome.tabs.update(tab.id, {
+						url : obj.urls[i].url,
+						active : false
+					}, function(tabUpdate) {
+						setTimeout(function(){
+							console.log(tabUpdate.id);
+						chrome.tabs.sendMessage(tabUpdate.id, {
+							action : "setScrollPosition",
+							to : obj.urls[i].scrollLocation
+						},function(){
+							console.log(tabUpdate.id+" sendMessagedone");
+							if(chrome.runtime.lastError){
+								console.log("error: "+chrome.runtime.lastError.message);
+							}
+						});
+						},2000);
+						console.log("updateID: "+tabUpdate.id);
+					});
+				}); 
+
+				
 			})(obj,i);
 			console.log(obj.urls[i].title+"||"+obj.urls[i].scrollLocation);			
 		}
