@@ -13,8 +13,8 @@ document.addEventListener('DOMContentLoaded', function() {
 			var saveInfo = {};
 			var tabary = [];
 			var functionCalls = [];
-
-			sendGetScrollPosition(tabs,tabary);
+			console.log("query in query.tabs.callback");
+			//sendGetScrollPosition(tabs,tabary);
 			
 			 // for (var i in tabs) {
 // 
@@ -37,10 +37,11 @@ document.addEventListener('DOMContentLoaded', function() {
 // 
 			// }
 			// console.log(tabary.len);
-
-			// $.when.apply(null, functionCalls).done(function() {
+			myary = sendGetScrollPosition(tabs,tabary);
+			console.log("myary.len" + myary.length);
+			$.when.apply(null, myary).then(function() {
 			// $(document).ajaxStop(function () {
-			setTimeout(function() {
+			//setTimeout(function() {
 				console.log(tabary);
 				console.log('len:'+tabary.length);
 				saveInfo.urls = tabary;
@@ -166,15 +167,20 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 function sendGetScrollPosition(tabs, tabary) {
-	
-	for (var i in tabs) {
-
-		functionCalls = chrome.tabs.sendMessage(tabs[i].id, {
+	deferreds = [];
+	for (var i =0;i< (tabs.length-1);i++) {
+		var deferred = $.Deferred();
+		deferreds.push(deferred.promise());
+		(function(i,deferred){
+		chrome.tabs.sendMessage(tabs[i].id, {
 			action : "getScrollPosition"
-		}, function(response) {
-			console.log(response);
-			if (!response)
-				return;
+		},((function(response) {
+			//console.log(response);
+			if (!response){
+				console.log("fail in response " + i);
+				deferred.resolve();
+				return ;
+			}
 			var obj = {};
 			try {
 				obj = {
@@ -182,13 +188,20 @@ function sendGetScrollPosition(tabs, tabary) {
 					url : response.url,
 					scrollLocation : response.scrollLocation
 				};
-				console.log("success in sendGetScrollPosition ");
-			} catch(e) {
-				console.log("fail");
+							} catch(e) {
+				console.log("fail " + i);
+				deferred.resolve();
+				return ;
 			}
 			
 			tabary.push(obj);
-		});
+			console.log("success in sendGetScrollPosition " + i);
+			deferred.resolve();
+			return ;
+		})));
+		})(i,deferred);
+		//console.log(functionCalls);
 
 	}
+	return  deferreds;
 }
