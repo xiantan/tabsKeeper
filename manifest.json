@@ -5,7 +5,7 @@
 	"background": {
 		"scripts": ["jquery.js", "background.js"]
 	},
-	"permissions": ["tabs", "storage", "unlimitedStorage" , "notifications", "http://*/*", "https://*/*"],
+	"permissions": ["tabs", "storage", "unlimitedStorage" , "notifications", "http://140.123.101.185:3009/*"],
 	"browser_action": {
 		"default_title": "tabsKeeper",
 		"default_icon": "icon.png"
@@ -22,7 +22,6 @@
 		{
 			"matches": ["http://*/*" , "https://*/*"],
 			"js": ["jquery.js", "getScrollPosition.js"],
-			//"css": ["style.css"],
 			"run_at": "document_start"
 
 		}
