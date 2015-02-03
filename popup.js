@@ -168,7 +168,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 function sendGetScrollPosition(tabs, tabary) {
 	deferreds = [];
-	for (var i =0;i< (tabs.length-1);i++) {
+	for (var i =0;i< (tabs.length);i++) {
 		var deferred = $.Deferred();
 		deferreds.push(deferred.promise());
 		(function(i,deferred){
