@@ -28,7 +28,8 @@ chrome.runtime.onInstalled.addListener(function(details) {
 		}
 		});
     }
-    chrome.storage.local.remove('content',function(){console.log("remove content @ extension inital");});
+    //chrome.storage.local.remove('content',function(){console.log("remove content @ extension inital");});
+    chrome.storage.local.clear(function(){console.log("clear all @ extension inital");});
 	console.log("should be all reload");
 
 }); 

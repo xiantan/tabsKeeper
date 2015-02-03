@@ -115,7 +115,7 @@ document.addEventListener('DOMContentLoaded', function() {
 					var title = items[i].title;
 					// results.push({ url:url });
 					var obj={};
-					obj = {url:url,title:title,subcontent:content.substring(locate-10,locate+10)};
+					obj = {url:url,title:title,subcontent:content.substring(locate-15,locate+30)};
 					
 					results[url] = obj;
 					console.log(locate + "$$$$" + results.hasOwnProperty(items[i].url) + "&&&" + items[i].url);
