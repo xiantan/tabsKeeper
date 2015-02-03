@@ -56,13 +56,14 @@ chrome.extension.onMessage.addListener(function(request, sender) {
 		
 		console.log(request.url);
 		//console.log(request.source);
-		var obj={url:request.url,content:request.source};
+		var obj={url:request.url,content:request.source,title:request.title};
 		obj[request.url]=request.url;
 		(function(obj){
 			var url = obj.url;
 			var content = obj.content;
+			var title = obj.title;
 			var obj2 ={};
-			obj2[url] = {url:url,content:content};
+			obj2[url] = {url:url,content:content,title:title};
 			contentSave = {url:url,content:content};
 			chrome.storage.local.set(obj2,function(){
 			});
@@ -95,35 +96,35 @@ chrome.extension.onMessage.addListener(function(request, sender) {
 		// });
 		})(obj);
 	}
-	else if(request.action == "search"){
+	else if(request.action == "search"){//won't work anymore 
 	
-		chrome.storage.local.get(null, function(items) {
-			contentSave = items.content;
-			//console.log(items);return;
-			var results = {};
-			pattern = request.search;
-			var locate = -1;
-			
-			//var results = [];
-			//for (var i = 0; i < contentSave.length; i++) {
-			for (var i in items) {
-				locate = items[i].content.indexOf(pattern);
-				if (locate != -1 && !results.hasOwnProperty(items[i].url)) {
-					var url = items[i].url;
-					var content = items[i].content;
-					// results.push({ url:url });
-					results[url] = url;
-					console.log(locate + "$$$$" + results.hasOwnProperty(items[i].url) + "&&&" + items[i].url);
-				} else {
-					console.log(locate + "$$$$" + results.hasOwnProperty(items[i].url) + "&&&" + items[i].url);
-				}
-			}
-			// for(var i =0;i<results.length;i++){
-			// console.log(results[i].url);
+		// chrome.storage.local.get(null, function(items) {
+			// contentSave = items.content;
+			// //console.log(items);return;
+			// var results = {};
+			// pattern = request.search;
+			// var locate = -1;
+// 			
+			// //var results = [];
+			// //for (var i = 0; i < contentSave.length; i++) {
+			// for (var i in items) {
+				// locate = items[i].content.indexOf(pattern);
+				// if (locate != -1 && !results.hasOwnProperty(items[i].url)) {
+					// var url = items[i].url;
+					// var content = items[i].content;
+					// // results.push({ url:url });
+					// results[url] = url;
+					// console.log(locate + "$$$$" + results.hasOwnProperty(items[i].url) + "&&&" + items[i].url);
+				// } else {
+					// console.log(locate + "$$$$" + results.hasOwnProperty(items[i].url) + "&&&" + items[i].url);
+				// }
 			// }
-
-			console.log("result" + JSON.stringify(results));
-		}); 
+			// // for(var i =0;i<results.length;i++){
+			// // console.log(results[i].url);
+			// // }
+// 
+			// console.log("result" + JSON.stringify(results));
+		// }); 
 
 
 		
