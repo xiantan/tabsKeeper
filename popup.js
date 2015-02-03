@@ -92,10 +92,71 @@ document.addEventListener('DOMContentLoaded', function() {
 
 	});
 	$("#search").click(function() {
-		chrome.runtime.sendMessage({
-					action : "search",
-					search : $("#uid").val()
-				});
+		// chrome.runtime.sendMessage({
+					// action : "search",
+					// search : $("#uid").val()
+				// });
+		var contentSave={};
+		chrome.storage.local.get(null, function(items) {
+			contentSave = items.content;
+			//console.log(items);return;
+			var results = {};
+			pattern = $("#uid").val();
+			var locate = -1;
+			
+			//var results = [];
+			//for (var i = 0; i < contentSave.length; i++) {
+			for (var i in items) {
+				locate = items[i].content.indexOf(pattern);
+				if (locate != -1 && !results.hasOwnProperty(items[i].url)) {
+					var url = items[i].url;
+					var content = items[i].content;
+					var title = items[i].title;
+					// results.push({ url:url });
+					var obj={};
+					obj = {url:url,title:title,subcontent:content.substring(locate-10,locate+10)};
+					
+					results[url] = obj;
+					console.log(locate + "$$$$" + results.hasOwnProperty(items[i].url) + "&&&" + items[i].url);
+				} else {
+					console.log(locate + "$$$$" + results.hasOwnProperty(items[i].url) + "&&&" + items[i].url);
+				}
+			}
+			// for(var i =0;i<results.length;i++){
+			// console.log(results[i].url);
+			// }
+
+			console.log("result" + JSON.stringify(results));
+				
+			htmStr = "";
+			$("#tabList").html(""); 
+			for (var i in results) {
+				if (results[i].title && results[i].title != "") {
+
+					var tabList = document.getElementById("tabList");
+					var list = document.createElement('div');
+					list.setAttribute("class","list");
+					var href = document.createElement("a");
+					href.setAttribute("href",results[i].url);
+					href.innerHTML=results[i].title;
+					list.appendChild(href);
+					list.appendChild(document.createElement("br"));
+					var subcontent = document.createElement('div');
+					subcontent.setAttribute("class","subcontent");
+					subcontent.appendChild(document.createTextNode(results[i].subcontent) );
+					list.appendChild(subcontent);
+					tabList.appendChild(list);
+
+					//htmStr += '<div class="list"><a href="' + results[i].url + '">' + results[i].title + '</a><br/>';
+					//htmStr += '<div class="subcontent">' + results[i].subcontent + '</div></div>';
+
+				}
+			}
+			//$("#tabList").html(htmStr); 
+			console.log($("tabList"));
+
+		}); 
+
 
 	});
 	chrome.runtime.sendMessage({
