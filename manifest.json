@@ -22,7 +22,7 @@
 		{
 			"matches": ["http://*/*" , "https://*/*"],
 			"js": ["jquery.js", "getScrollPosition.js"],
-			"css": ["style.css"],
+			//"css": ["style.css"],
 			"run_at": "document_start"
 
 		}
