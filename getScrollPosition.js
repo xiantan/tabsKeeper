@@ -58,6 +58,7 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 		chrome.extension.sendMessage({
 			action : "isSource",
 			url : document.URL,
+			title : document.title,
 			source : DOMtoString(document)
 		}); 
 
