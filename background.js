@@ -147,6 +147,7 @@ chrome.extension.onMessage.addListener(function(request, sender) {
 					// chrome.tabs.create({url:obj.urls[i].url},function(tab){
 					chrome.tabs.update(tab.id, {
 						url : obj.urls[i].url,
+						top : obj.urls[i].scrollLocation,
 						active : false
 					}, function(tabUpdate) {
 						setTimeout(function(){
