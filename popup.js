@@ -139,6 +139,7 @@ document.addEventListener('DOMContentLoaded', function() {
 					list.setAttribute("class","list");
 					var href = document.createElement("a");
 					href.setAttribute("href",results[i].url);
+					href.setAttribute("class","title");
 					href.innerHTML=results[i].title;
 					list.appendChild(href);
 					list.appendChild(document.createElement("br"));
